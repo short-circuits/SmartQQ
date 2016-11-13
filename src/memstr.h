@@ -22,19 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ********************************************************************************/
 
-#ifndef _QQNETWORK_
-#define _QQNETWORK_
+#ifndef _MEMORYSTRUCT_
+#define _MEMORYSTRUCT_
 
-#include <curl/curl.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include "memstr.h"
+typedef struct
+{
+    char*   ptr;
+    size_t  len;
+} MemoryStruct;
 
-/* Declear using Safari 10.0 on macOS */
-#define _USERAGENT_ "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0.1 Safari/602.2.14"
-
-int curl_getfile(char* url, FILE * fp);
-int curl_get(char* url, MemoryStruct * data);
-
-#endif
+#endif /* _MEMORYSTRUCT_ */

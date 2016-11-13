@@ -30,10 +30,33 @@ SOFTWARE.
 #include <string.h>
 #include <stdlib.h>
 #include "message.h"
+#include "memstr.h"
 
 size_t WriteFile(void *ptr, size_t size, size_t nmemb, FILE *stream) {
     size_t written = fwrite(ptr, size, nmemb, stream);
     return written;
+}
+
+size_t WriteMemory(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    size_t realsize = size * nmemb;
+    MemoryStruct *mem = (MemoryStruct *)userp;
+
+    mem->ptr = realloc(mem->ptr, mem->len + realsize + 1);
+    if(mem->ptr == NULL) {
+        /* out of memory! */ 
+        printf("\033[31m");
+        print_time();
+        printf("not enough memory (realloc returned NULL)\n");
+        printf("\033[0m\n");
+        return 0;
+    }
+
+    memcpy(&(mem->ptr[mem->len]), contents, realsize);
+    mem->len += realsize;
+    mem->ptr[mem->len] = 0;
+
+    return realsize;
 }
 
 int curl_getfile(char* url, FILE * fp)
@@ -60,12 +83,10 @@ int curl_getfile(char* url, FILE * fp)
 
     curl_easy_cleanup(curl);
     if (res != CURLE_OK){
-        if(_NETWORK_OUTPUT_==1){
-            printf("\033[31m");
-            print_time();
-            fprintf(stderr, "cURL error:%u", res);
-            printf("\033[0m\n");
-        }
+        printf("\033[31m");
+        print_time();
+        fprintf(stderr, "cURL error:%u", res);
+        printf("\033[0m\n");
         return -1;
     }else{
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
@@ -74,6 +95,49 @@ int curl_getfile(char* url, FILE * fp)
             printf("\033[31m");
             print_time();
             fprintf(stderr, "cURL get file return %ld", response_code);
+            printf("\033[0m\n");
+            return -1;
+        }
+    }
+    return 0;
+}
+
+int curl_get(char* url, MemoryStruct * data)
+{
+    CURL* curl;
+    CURLcode res;
+
+    long response_code=200;
+
+    curl = curl_easy_init();
+
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, _USERAGENT_);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemory);
+
+    /* we pass our 'chunk' struct to the callback function */ 
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)data);
+
+    res = curl_easy_perform(curl);
+
+    curl_easy_cleanup(curl);
+    if (res != CURLE_OK){
+        printf("\033[31m");
+        print_time();
+        fprintf(stderr, "cURL error:%u", res);
+        printf("\033[0m\n");
+        return -1;
+    }else{
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+        if (response_code!=200)
+        {
+            printf("\033[31m");
+            print_time();
+            fprintf(stderr, "cURL get page return %ld", response_code);
             printf("\033[0m\n");
             return -1;
         }
