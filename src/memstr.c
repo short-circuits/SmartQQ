@@ -22,15 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ********************************************************************************/
 
-#ifndef _MEMORYSTRUCT_
-#define _MEMORYSTRUCT_
+#include "memstr.h"
 
-typedef struct
+char * mem_match(MemoryStruct * mem,char * mod)
 {
-    char*   ptr;
-    size_t  len;
-} MemoryStruct;
-
-char * mem_match(MemoryStruct * mem,char * mod);
-
-#endif /* _MEMORYSTRUCT_ */
+	char *cp=mem;
+	char *s1,*s2;
+	if (!*mod){
+		return mem;
+	}
+	while(*cp){
+		s1=cp;
+		s2=mod;
+		while(*s1!='\0'&&*s2!='\0'&&(*s1-*s2)==0){
+			s1++,s2++;
+		}
+		if (!*s2){
+			return cp;
+		}
+		cp++;
+	}
+	return NULL;
+}
