@@ -23,6 +23,7 @@ SOFTWARE.
 ********************************************************************************/
 
 #include "protocol.h"
+#include <string.h>
 
 int login_by_qrcode(QQClient * client)
 {
@@ -30,6 +31,7 @@ int login_by_qrcode(QQClient * client)
     MemoryStruct * data;
     char* cp;
     int i;
+    char *url=NULL;
 
     data=malloc(sizeof(MemoryStruct));
     data->ptr=NULL;
@@ -55,6 +57,15 @@ int login_by_qrcode(QQClient * client)
     client->appid[9]='\0';
     print_time();
     printf("Get appid: %s\n",client->appid);
+
+    url=malloc(73*sizeof(char));
+    url[0]='\0';
+    strcpy(url, "https://ssl.ptlogin2.qq.com/ptqrshow?appid=");
+    strncat(url,client->appid,9);
+    strncat(url,"&e=0&l=L&s=8&d=72&v=4" , 21 );
+
+    printf("Downlanding 2D code");
+    curl_getfile(url,fp);
 
     mem_free(data);
     free(data);
