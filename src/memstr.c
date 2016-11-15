@@ -26,10 +26,10 @@ SOFTWARE.
 
 char * mem_match(MemoryStruct * mem,char * mod)
 {
-	char *cp=mem;
+	char *cp=mem->ptr;
 	char *s1,*s2;
 	if (!*mod){
-		return mem;
+		return mem->ptr;
 	}
 	while(*cp){
 		s1=cp;

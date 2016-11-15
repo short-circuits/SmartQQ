@@ -24,15 +24,16 @@ SOFTWARE.
 
 #include "protocol.h"
 
-int login_by_qrcode(void)
+int login_by_qrcode(QQClient * client)
 {
     FILE * fp;
     MemoryStruct * data;
-    char* 
+    char* cp;
+    int i;
 
     data=malloc(sizeof(MemoryStruct));
 
-    fp=fopen("./qrcode.bmp","wb");
+    fp=fopen(QRCODE_FILE,"wb");
 
     if (fp==NULL){
         printf("\033[31m");
@@ -44,10 +45,16 @@ int login_by_qrcode(void)
 
     print_time();
     printf("Trying to login by qrcode.\n");
-
     curl_get("https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1&s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert&strong_login=1&login_state=10&t=20131024001",data);
+    cp=mem_match(data,"<input type=\"hidden\" name=\"aid\" value=\"");
+    for(i=0;i<10;i++){
+        client->appid[i]=cp[i+39];
+    }
+    client->appid[9]='\0';
+    print_time();
+    printf("Get appid: %s\n",client->appid);
 
-    strstr(data->ptr,"");
+    free(data);
 
     fclose(fp);
     return 0;

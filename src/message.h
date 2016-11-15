@@ -22,8 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ********************************************************************************/
 
+#ifndef _QQ_MESSAGE_
+#define _QQ_MESSAGE_
+
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
 
 int print_time(void);
+
+#endif /* _QQ_MESSAGE_ */

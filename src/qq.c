@@ -22,18 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ********************************************************************************/
 
-#ifndef _MEMORYSTRUCT_
-#define _MEMORYSTRUCT_
-
 #include <stdio.h>
-#include <stdlib.h>
+#include "memstr.h"
+#include "network.h"
+#include "protocol.h"
 
-typedef struct
+int main(void)
 {
-    char*   ptr;
-    size_t  len;
-} MemoryStruct;
-
-char * mem_match(MemoryStruct * mem,char * mod);
-
-#endif /* _MEMORYSTRUCT_ */
+    QQClient client;
+    login_by_qrcode(&client);
+    return 0;
+}

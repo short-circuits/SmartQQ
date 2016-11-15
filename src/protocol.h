@@ -22,9 +22,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ********************************************************************************/
 
+#ifndef _PROTOCOL_
+#define _PROTOCOL_
+
 #include <stdio.h>
 #include "network.h"
 #include "message.h"
 #include "memstr.h"
 
-int login_by_qrcode(void);
+#define QRCODE_FILE "./qrcode.bmp"
+
+typedef struct
+{
+	char appid[10];
+} QQClient;
+
+int login_by_qrcode(QQClient * client);
+
+#endif /* _PROTOCOL_ */
