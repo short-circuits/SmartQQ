@@ -24,6 +24,13 @@ SOFTWARE.
 
 #include "memstr.h"
 
+void mem_free(MemoryStruct * mem)
+{
+	free(mem->ptr);
+	mem->ptr=NULL;
+	mem->len=0;
+}
+
 char * mem_match(MemoryStruct * mem,char * mod)
 {
 	char *cp=mem->ptr;

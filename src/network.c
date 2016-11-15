@@ -47,7 +47,7 @@ size_t WriteMemory(void *contents, size_t size, size_t nmemb, void *userp)
         /* out of memory! */ 
         printf("\033[31m");
         print_time();
-        printf("not enough memory (realloc returned NULL)\n");
+        printf("not enough memory (malloc returned NULL)");
         printf("\033[0m\n");
         return 0;
     }

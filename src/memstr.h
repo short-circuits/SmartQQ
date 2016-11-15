@@ -34,6 +34,9 @@ typedef struct
     size_t  len;
 } MemoryStruct;
 
+#define empty_mem {NULL,0}
+
+void mem_free(MemoryStruct * mem);
 char * mem_match(MemoryStruct * mem,char * mod);
 
 #endif /* _MEMORYSTRUCT_ */

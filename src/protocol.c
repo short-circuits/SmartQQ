@@ -32,6 +32,8 @@ int login_by_qrcode(QQClient * client)
     int i;
 
     data=malloc(sizeof(MemoryStruct));
+    data->ptr=NULL;
+    data->len=0;
 
     fp=fopen(QRCODE_FILE,"wb");
 
@@ -54,6 +56,7 @@ int login_by_qrcode(QQClient * client)
     print_time();
     printf("Get appid: %s\n",client->appid);
 
+    mem_free(data);
     free(data);
 
     fclose(fp);
