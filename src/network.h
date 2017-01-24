@@ -39,5 +39,6 @@ SOFTWARE.
 int curl_getfile(char* url, FILE * fp);
 int curl_get(char* url, MemoryStruct * data);
 int curl_get_with_referer(char* url, MemoryStruct * data, char * referer);
+int curl_post(char* url, MemoryStruct * data,char * post_data, char * referer);
 
 #endif

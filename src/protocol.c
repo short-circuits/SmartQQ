@@ -23,7 +23,36 @@ SOFTWARE.
 ********************************************************************************/
 
 #include "protocol.h"
-#include <string.h>
+
+/*
+*   又看代码
+*   看你妹啊                      .. .vr
+*                             qBMBBBMBMY
+*                            8BBBBBOBMBMv
+*                          iMBMM5vOY:BMBBv
+*           .r,            OBM;   .: rBBBBBY
+*           vUl            7BB   .;7. LBMMBBM.
+*          .@Wwz           :uvir .i:.iLMOMOBM..
+*          vv::r;             iY. ...rv,@arqiao.
+*           Li. i:             v:.::::7vOBBMBL..
+*           ,i7: vSUi,         :M7.:.,:uO8OP. .
+*             .N2k5u1ju7,..     BMGiiL7   ,i,i.
+*              :rLjFYjvjLY7r::.  ;v  vr...rE8q,.:,,
+*             751jSLXPFu5uU@guohezou.,1vjY2E8@Yizero.
+*             BB:FMu rkM8Eq0PFjF15FZOXu15F25uuLuu25Gi.
+*           ivSvvXL    :v58ZOGZXF2UUkFSFkU1u125uUJUUZ,
+*         :@kevensun       ,iY2OGOXSUXkSuS2F5XXkUX5SEv.
+*     .:iOBMBMBBOOBMUi:,        ,:8PkFP5NkPXkFqPEqqkZu.
+*   .rqMqBBMOMMBMBBBM .           @kexianli.S11kFSU5q5
+* .7BBOi1L1MM8BBBOMBB..,          8kqS52XkkU1Uqkk1kUEJ
+* .;MBZ:iiMBMBMMOBBBu ,           1OkS1F1X5kPP112F51kU
+*   .rPY  OMBMBBBMBB2 ,.          rME5SSSFk1XPqFNkSUPZ,.
+*          ;;JuBML::r:.:.,,        SZPXOSXSP5kXGNP15UBr.
+*            L     :@sanshao.      :MNZqNXqSqXk2EOPSXPE.
+*          vuLBX.,,v8Bj. i:r7:      2ZkqqOXXSNNONOXXSXOU
+*        :r2. rMBGBMGi .7Y, 1i::i   vOOPMNNSXXEqP@Secbone.
+*        .i1r. .jkY     vE. iY....  2OFqOq5X5F1S2F22uuv1M;
+*/
 
 int get_QR_login_status(QQClient * client)
 {
@@ -267,18 +296,145 @@ int login_by_qrcode(QQClient * client)
     }
 
     print_time();
-    printf("\033[1A\033[K%s, user_name [%s]\n", client->status_message,client->user_name);
+    printf("\033[1A\033[K%suser_name [%s]\n", client->status_message,client->user_name);
 
     data=malloc(sizeof(MemoryStruct));
     data->ptr=NULL;
     data->len=0;
 
+    /* Get cookie */
     curl_get(client->redirect_url,data);
-
-    printf("%s\n", data->ptr);
 
     mem_free(data);
     free(data);
+
+    return 0;
+}
+
+int login_by_cookie(QQClient * client)
+{
+    FILE * fp;
+    int ch;
+
+    MemoryStruct * login_data;
+    MemoryStruct * login_data2;
+    cJSON *cjson_login = NULL;
+    cJSON *cjson_result = NULL;
+
+
+    login_data=malloc(sizeof(MemoryStruct));
+    login_data->ptr=NULL;
+    login_data->len=0;
+
+    MemoryStruct * cookie;
+
+    cookie=malloc(sizeof(MemoryStruct));
+    cookie->ptr=NULL;
+    cookie->len=0;
+
+    print_time();
+    printf("Trying to login by cookie.\n");
+
+
+    /* Read cookie file to memory */
+    fp = fopen(COOKIE_FILE,"rb");
+
+    if (fp==NULL){
+        printf("\033[31m");
+        print_time();
+        fprintf(stderr, "Cannot open cookie file.");
+        printf("\033[0m\n");
+        return -1;
+    }
+
+    fseek(fp, 0, SEEK_END);
+    cookie->len = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    cookie->ptr = malloc(cookie->len*sizeof(char));
+
+    for (int i = 0; (ch=fgetc(fp))!=EOF; i++){
+        cookie->ptr[i]=ch;
+    }
+
+    fclose(fp);
+    
+    {
+        char * cp;
+        int i,j;
+        cp = mem_match(cookie,"ptwebqq");
+        for(i=0;cp[i+8]!='\n';i++){
+            ;
+        }
+        client->ptwebqq = malloc((i+1)*sizeof(char));
+        for(j=0;j<i;j++){
+            client->ptwebqq[j]=cp[j+8];
+        }
+        client->ptwebqq[j]='\0';
+    }
+
+    {
+        char * login_message;
+        login_message = malloc((78+strlen(client->ptwebqq)+8)*sizeof(char));
+        sprintf(login_message,"r={\"ptwebqq\":\"%s\",\"clientid\":%d,\"psessionid\":\"%s\",\"status\":\"online\"}",\
+            client->ptwebqq, DEFAULT_CLIENT_ID, PSESSIONID);
+
+        curl_post(LOGIN_URL,login_data,login_message,SMART_QQ_REFER);
+    }
+
+    cjson_login = cJSON_Parse(login_data->ptr);
+
+    mem_free(login_data);
+    free(login_data);
+
+    if (cJSON_GetObjectItem(cjson_login, "retcode")->valueint != 0)
+    {
+        printf("\033[31m");
+        print_time();
+        fprintf(stderr, "Login by cookie failed.");
+        printf("\033[0m\n");
+        return -1;
+    }
+
+    cjson_result = cJSON_GetObjectItem(cjson_login, "result");
+
+    client->uin = (long)cJSON_GetObjectItem(cjson_result, "uin")->valuedouble;
+
+    client->psessionid = mem_dup(cJSON_GetObjectItem(cjson_result, "psessionid")->valuestring);
+    client->vfwebqq = mem_dup(cJSON_GetObjectItem(cjson_result, "vfwebqq")->valuestring);
+
+    login_data2=malloc(sizeof(MemoryStruct));
+    login_data2->ptr=NULL;
+    login_data2->len=0;
+
+    {
+        time_t time_now;
+        char * url;
+        url = malloc((strlen(client->ptwebqq)+\
+            20+strlen(client->psessionid)\
+            )*sizeof(char));
+        time(&time_now);
+        sprintf(url,LOGIN_URL2,client->ptwebqq,DEFAULT_CLIENT_ID,client->psessionid,time_now*1000);
+
+        curl_get_with_referer(url,login_data2,SMART_QQ_REFER);
+    }
+
+    cjson_login = cJSON_Parse(login_data2->ptr);
+
+    mem_free(login_data2);
+    free(login_data2);
+
+    if (cJSON_GetObjectItem(cjson_login, "retcode")->valueint != 0)
+    {
+        printf("\033[31m");
+        print_time();
+        fprintf(stderr, "Login by cookie failed.");
+        printf("\033[0m\n");
+        return -1;
+    }
+
+    print_time();
+    printf("Login by cookie succeed. User ID: [\033[32m%ld\033[0m]\n",client->uin);
 
     return 0;
 }

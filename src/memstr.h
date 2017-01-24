@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct
 {
@@ -36,6 +37,7 @@ typedef struct
 
 #define empty_mem {NULL,0}
 
+char * mem_dup(const char * string);
 void mem_free(MemoryStruct * mem);
 char * mem_match(MemoryStruct * mem,char * mod);
 

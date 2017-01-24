@@ -24,6 +24,16 @@ SOFTWARE.
 
 #include "memstr.h"
 
+char * mem_dup(const char * string)
+{	
+	size_t len = strlen(string);
+	char * ret;
+	ret = malloc((len+1)*sizeof(char));
+	memcpy(ret, string, len);
+	ret[len] = '\0';
+	return ret;
+}
+
 void mem_free(MemoryStruct * mem)
 {
 	free(mem->ptr);

@@ -199,3 +199,51 @@ int curl_get_with_referer(char* url, MemoryStruct * data, char * referer)
     return 0;
 }
 
+int curl_post(char* url, MemoryStruct * data,char * post_data, char * referer)
+{
+    CURL* curl;
+    CURLcode res;
+
+    long response_code=200;
+
+    curl = curl_easy_init();
+
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+
+    curl_easy_setopt(curl, CURLOPT_COOKIEFILE, COOKIE_FILE);
+    curl_easy_setopt(curl, CURLOPT_COOKIEJAR, COOKIE_FILE); 
+    curl_easy_setopt(curl, CURLOPT_POST,1);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS,post_data);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, _USERAGENT_);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemory);
+    curl_easy_setopt(curl, CURLOPT_REFERER, referer);
+
+    /* we pass our 'chunk' struct to the callback function */ 
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)data);
+
+    res = curl_easy_perform(curl);
+
+    curl_easy_cleanup(curl);
+
+    if (res != CURLE_OK){
+        printf("\033[31m");
+        print_time();
+        fprintf(stderr, "cURL error:%u", res);
+        printf("\033[0m\n");
+        return -1;
+    }else{
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+        if (response_code!=200)
+        {
+            printf("\033[31m");
+            print_time();
+            fprintf(stderr, "cURL post return %ld", response_code);
+            printf("\033[0m\n");
+            return -1;
+        }
+    }
+    return 0;
+}

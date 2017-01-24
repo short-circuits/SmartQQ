@@ -30,6 +30,15 @@ SOFTWARE.
 int main(void)
 {
     QQClient client;
-    login_by_qrcode(&client);
+    //login_by_qrcode(&client);
+    if(login_by_cookie(&client)){
+        login_by_qrcode(&client);
+        if(login_by_cookie(&client)){
+            printf("\033[31m");
+            print_time();
+            fprintf(stderr, "Login failed.");
+            printf("\033[0m\n");
+        }
+    }
     return 0;
 }
