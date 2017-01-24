@@ -30,6 +30,9 @@ int get_QR_login_status(QQClient * client)
     char *url=NULL;
     time_t time_now;
     MemoryStruct * data;
+    char status_code[5];
+    char * status_message;
+    char * user_name;
 
     data=malloc(sizeof(MemoryStruct));
     data->ptr=NULL;
@@ -44,7 +47,91 @@ int get_QR_login_status(QQClient * client)
 
     curl_get_with_referer(url, data, INIT_URL);
 
-    printf("%s", data->ptr);
+    free(url);
+    
+    {
+        int i,j,k,len;
+
+        for (i = 0; data->ptr[i]!='\''; i++){
+            ;
+        }
+        j=i+1;
+        for (i++ ; data->ptr[i]!='\''; i++){
+            ;
+        }
+        for (k=0; j<i; k++,j++){
+            status_code[k]=data->ptr[j];
+        }
+        status_code[k]='\0';
+
+        client->QR_status_code = atoi(status_code);
+
+        for (i++ ; data->ptr[i]!='\''; i++){
+            ;
+        }
+        for (i++ ; data->ptr[i]!='\''; i++){
+            ;
+        }
+
+
+        for (i++ ; data->ptr[i]!='\''; i++){
+            ;
+        }
+        j=i+1;
+        for (i++ ; data->ptr[i]!='\''; i++){
+            ;
+        }
+        len=i-j;
+        client->redirect_url = malloc((len+1)*sizeof(char));
+        for (k=0; j<i; k++,j++){
+            client->redirect_url[k]=data->ptr[j];
+        }
+        client->redirect_url[k]='\0';
+
+        for (i++ ; data->ptr[i]!='\''; i++){
+            ;
+        }
+        for (i++ ; data->ptr[i]!='\''; i++){
+            ;
+        }
+
+
+        for (i++ ; data->ptr[i]!='\''; i++){
+            ;
+        }
+        j=i+1;
+        for (i++ ; data->ptr[i]!='\''; i++){
+            ;
+        }
+        len=i-j;
+        client->status_message = malloc((len+1)*sizeof(char));
+        for (k=0; j<i; k++,j++){
+            client->status_message[k]=data->ptr[j];
+        }
+        client->status_message[k]='\0';
+
+        for (i++ ; data->ptr[i]!='\''; i++){
+            ;
+        }
+        j=i+1;
+        for (i++ ; data->ptr[i]!='\''; i++){
+            ;
+        }
+        len=i-j;
+        client->user_name = malloc((len+1)*sizeof(char));
+        for (k=0; j<i; k++,j++){
+            client->user_name[k]=data->ptr[j];
+        }
+        client->user_name[k]='\0';
+    }
+
+    printf("\033[1A\033[K");
+    print_time();
+    printf("%s, status code %d\n", client->status_message,client->QR_status_code);
+    fflush(stdout);
+
+    mem_free(data);
+    free(data);
 
     return 0;
 }
@@ -151,28 +238,47 @@ int login_by_qrcode(QQClient * client)
     mem_free(data);
     free(data);
 
-
-    url=malloc(73*sizeof(char));
-
-    sprintf(url,QR_URL,client->appid);
-
-    time(&client->start_time);
-
-    print_time();
-    printf("Downlanding QRcode\n");
-    curl_getfile(url,fp);
-
-
-    fclose(fp);
-
-    print_time();
-    printf("QRcode was save to %s, Please scan it on mobile phone\n",QRCODE_FILE);
-
+    client->QR_status_code=65;
+    
     for (;;){
-        sleep(5);
-        print_time();
+        if (client->QR_status_code==65){
+            url=malloc(73*sizeof(char));
+
+            sprintf(url,QR_URL,client->appid);
+
+            time(&client->start_time);
+
+            print_time();
+            printf("Downlanding QRcode\n");
+            curl_getfile(url,fp);
+
+            fclose(fp);
+            free(url);
+
+            print_time();
+            printf("QRcode was save to %s, Please scan it on mobile phone\n\n",QRCODE_FILE);
+
+        }
+        sleep(1);
+        if (client->QR_status_code==0){
+            break;
+        }
         get_QR_login_status(client);
     }
+
+    print_time();
+    printf("\033[1A\033[K%s, user_name [%s]\n", client->status_message,client->user_name);
+
+    data=malloc(sizeof(MemoryStruct));
+    data->ptr=NULL;
+    data->len=0;
+
+    curl_get(client->redirect_url,data);
+
+    printf("%s\n", data->ptr);
+
+    mem_free(data);
+    free(data);
 
     return 0;
 }
