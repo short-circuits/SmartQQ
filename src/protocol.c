@@ -25,12 +25,36 @@ SOFTWARE.
 #include "protocol.h"
 #include <string.h>
 
+int get_QR_login_status(QQClient * client)
+{
+    char *url=NULL;
+    time_t time_now;
+    MemoryStruct * data;
+
+    data=malloc(sizeof(MemoryStruct));
+    data->ptr=NULL;
+    data->len=0;
+
+    time(&time_now);
+
+    url = malloc((390)*sizeof(char));
+
+    sprintf(url, QR_VALIDATION_URL, \
+        client->appid, (time_now-client->start_time)*1000, client->mibao_css, client->js_ver, client->sign);
+
+    curl_get_with_referer(url, data, INIT_URL);
+
+    printf("%s", data->ptr);
+
+    return 0;
+}
+
 int login_by_qrcode(QQClient * client)
 {
     FILE * fp;
     MemoryStruct * data;
     char* cp;
-    int i;
+    int i,j;
     char *url=NULL;
 
     data=malloc(sizeof(MemoryStruct));
@@ -42,34 +66,113 @@ int login_by_qrcode(QQClient * client)
     if (fp==NULL){
         printf("\033[31m");
         print_time();
-        fprintf(stderr, "protocol.c:30 Cannot open file for QRcode. fopen returnd NULL");
+        fprintf(stderr, "login_by_qrcode() Cannot open file for QRcode. fopen returnd NULL");
         printf("\033[0m\n");
         return -1;
     }
 
     print_time();
     printf("Trying to login by qrcode.\n");
-    curl_get("https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1&s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert&strong_login=1&login_state=10&t=20131024001",data);
+
+    curl_get(INIT_URL,data);
+
     cp=mem_match(data,"<input type=\"hidden\" name=\"aid\" value=\"");
-    for(i=0;i<10;i++){
-        client->appid[i]=cp[i+39];
+    if (cp==NULL){
+        printf("\033[31m");
+        print_time();
+        fprintf(stderr, "Cannot get appid. mem_match() returnd NULL");
+        printf("\033[0m\n");
+        return -1;
     }
-    client->appid[9]='\0';
+    for(i=0;cp[i+39]!='\"';i++);
+    client->appid = malloc((i+1)*sizeof(char));
+    for(j=0;j<i;j++){
+        client->appid[j]=cp[j+39];
+    }
+    client->appid[j]='\0';
     print_time();
     printf("Get appid: %s\n",client->appid);
 
-    url=malloc(73*sizeof(char));
-    url[0]='\0';
-    strcpy(url, "https://ssl.ptlogin2.qq.com/ptqrshow?appid=");
-    strncat(url,client->appid,9);
-    strncat(url,"&e=0&l=L&s=8&d=72&v=4" , 21 );
 
-    printf("Downlanding 2D code");
-    curl_getfile(url,fp);
+    cp=mem_match(data,"g_pt_version=encodeURIComponent(\"");
+    if (cp==NULL){
+        printf("\033[31m");
+        print_time();
+        fprintf(stderr, "Cannot get js_ver. mem_match() returnd NULL");
+        printf("\033[0m\n");
+        return -1;
+    }
+    for(i=0;cp[i+33]!='\"';i++);
+    client->js_ver = malloc((i+1)*sizeof(char));
+    for(j=0;j<i;j++){
+        client->js_ver[j]=cp[j+33];
+    }
+    client->js_ver[j]='\0';
+    print_time();
+    printf("Get js_ver: %s\n",client->js_ver);
+
+
+    cp=mem_match(data,"g_mibao_css=encodeURIComponent(\"");
+    if (cp==NULL){
+        printf("\033[31m");
+        print_time();
+        fprintf(stderr, "Cannot get mibao_css. mem_match() returnd NULL");
+        printf("\033[0m\n");
+        return -1;
+    }
+    for(i=0;cp[i+32]!='\"';i++);
+    client->mibao_css = malloc((i+1)*sizeof(char));
+    for(j=0;j<i;j++){
+        client->mibao_css[j]=cp[j+32];
+    }
+    client->mibao_css[j]='\0';
+    print_time();
+    printf("Get mibao_css: %s\n",client->mibao_css);
+
+
+    cp=mem_match(data,"g_login_sig=encodeURIComponent(\"");
+    if (cp==NULL){
+        printf("\033[31m");
+        print_time();
+        fprintf(stderr, "Cannot get sign. mem_match() returnd NULL");
+        printf("\033[0m\n");
+        return -1;
+    }
+    for(i=0;cp[i+32]!='\"';i++);
+    client->sign = malloc((i+1)*sizeof(char));
+    for(j=0;j<i;j++){
+        client->sign[j]=cp[j+32];
+    }
+    client->sign[j]='\0';
+    print_time();
+    printf("Get sign: %s\n",client->sign);
+
 
     mem_free(data);
     free(data);
 
+
+    url=malloc(73*sizeof(char));
+
+    sprintf(url,QR_URL,client->appid);
+
+    time(&client->start_time);
+
+    print_time();
+    printf("Downlanding QRcode\n");
+    curl_getfile(url,fp);
+
+
     fclose(fp);
+
+    print_time();
+    printf("QRcode was save to %s, Please scan it on mobile phone\n",QRCODE_FILE);
+
+    for (;;){
+        sleep(5);
+        print_time();
+        get_QR_login_status(client);
+    }
+
     return 0;
 }
