@@ -213,7 +213,7 @@ int get_self_info(QQClient *client)
 
     sprintf(url,"http://s.web2.qq.com/api/get_self_info2?t=%ld.55",time_now);
 
-    curl_get(url,data);
+    curl_get_with_referer(url,data,SMART_QQ_REFER);
 
     print_time();
     printf("%s.\n",data->ptr);
@@ -456,6 +456,15 @@ int login_by_cookie(QQClient * client)
         char * cp;
         int i,j;
         cp = mem_match(cookie,"ptwebqq");
+
+        if (cp==NULL){
+            printf("\033[31m");
+            print_time();
+            fprintf(stderr, "Invalid cookie.txt.");
+            printf("\033[0m\n");
+            return -1;
+        }
+
         for(i=0;cp[i+8]!='\n';i++){
             ;
         }

@@ -118,8 +118,8 @@ int curl_get(char* url, MemoryStruct * data)
 
     curl_easy_setopt(curl, CURLOPT_COOKIEFILE, COOKIE_FILE);
     curl_easy_setopt(curl, CURLOPT_COOKIEJAR, COOKIE_FILE); 
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, _USERAGENT_);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemory);
