@@ -23,6 +23,7 @@ SOFTWARE.
 ********************************************************************************/
 
 #include <stdio.h>
+#include <unistd.h>
 #include "memstr.h"
 #include "network.h"
 #include "protocol.h"
@@ -38,7 +39,12 @@ int main(void)
             print_time();
             fprintf(stderr, "Login failed.");
             printf("\033[0m\n");
+            exit(-1);
         }
+    }
+    while(1){
+        check_message(&client);
+        usleep(100000);
     }
     return 0;
 }

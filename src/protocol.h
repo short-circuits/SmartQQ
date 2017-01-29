@@ -43,6 +43,7 @@ SOFTWARE.
 #define SMART_QQ_REFER "http://d1.web2.qq.com/proxy.html?v=20030916001&callback=1&id=2"
 #define LOGIN_URL "http://d1.web2.qq.com/channel/login2"
 #define LOGIN_URL2 "http://s.web2.qq.com/api/getvfwebqq?ptwebqq=%s&clientid=%d&psessionid=%s&t=%ld"
+#define POLL_URL "http://d1.web2.qq.com/channel/poll2"
 
 #define DEFAULT_CLIENT_ID 53999199
 #define PSESSIONID ""
@@ -67,5 +68,7 @@ typedef struct
 
 int login_by_qrcode(QQClient * client);
 int login_by_cookie(QQClient * client);
+int check_message(QQClient * client);
+int get_self_info(QQClient *client);
 
 #endif /* _PROTOCOL_ */

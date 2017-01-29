@@ -175,7 +175,7 @@ int curl_get_with_referer(char* url, MemoryStruct * data, char * referer)
 
     /* we pass our 'chunk' struct to the callback function */ 
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)data);
-
+    
     res = curl_easy_perform(curl);
 
     curl_easy_cleanup(curl);
@@ -214,8 +214,8 @@ int curl_post(char* url, MemoryStruct * data,char * post_data, char * referer)
     curl_easy_setopt(curl, CURLOPT_COOKIEJAR, COOKIE_FILE); 
     curl_easy_setopt(curl, CURLOPT_POST,1);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS,post_data);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, _USERAGENT_);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemory);

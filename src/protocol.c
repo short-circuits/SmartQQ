@@ -40,7 +40,7 @@ SOFTWARE.
 *              :rLjFYjvjLY7r::.  ;v  vr...rE8q,.:,,
 *             751jSLXPFu5uU@guohezou.,1vjY2E8@Yizero.
 *             BB:FMu rkM8Eq0PFjF15FZOXu15F25uuLuu25Gi.
-*           ivSvvXL    :v58ZOGZXF2UUkFSFkU1u125uUJUUZ,
+*           ivSvvXL    :v58ZOGZXF2UUkFSFkU1u125uUJUUZ.
 *         :@kevensun       ,iY2OGOXSUXkSuS2F5XXkUX5SEv.
 *     .:iOBMBMBBOOBMUi:,        ,:8PkFP5NkPXkFqPEqqkZu.
 *   .rqMqBBMOMMBMBBBM .           @kexianli.S11kFSU5q5
@@ -163,6 +163,63 @@ int get_QR_login_status(QQClient * client)
     free(data);
 
     return 0;
+}
+/*
+*        ?M                                                  
+*        ?M .                 >H-N!       $NN                
+*        OM                  $.  M;  . ?M   Q.               
+*        HM .              O7   .7    Q!   ;M                
+*        MN               H-    M   .M!    N;                
+*        MN .            Q.    M.  ;N     7-                 
+*        MH            ;QMH?!;.  .;-     CN                  
+*        M$        ;HM!                    .?M;              
+*        MC      $M                          .-HH            
+*        MC     M-                              !M.          
+*        MC    N      ?.      -                  :M.         
+*        M7   :OMMMMMMM-      ;>CCOHNMMMMO        CQ         
+*        M>   $>     $          O                 .M.        
+*        M!   N-    ;Q          H                  M;        
+*        M>  :$.                                  ;M         
+*        M!  $!                                   N>         
+*        M>  ?N        NNMMMM7                   N>          
+*        M?   CM       ??                     -NM .          
+*        MC     ?MM-   77                  ?MM-              
+*        MM!M;     :QMMMC:  .       7NMMM$;                  
+*        MN                 .  .;      N-                    
+*        MM;              .C-  >!       QO                   
+*        M$$QNMMMMMMMHQ$OC . M: .M?  Q-  ?M                  
+*        M$            . M .ONM.   .NNH   N                  
+*        MQ              M     $M .   .;  M                  
+*        MH              M       >MH    -M!                  
+*        MH              M          OMMN?                    
+*        MN .          . M-            M.                    
+*        MM              CH            NN                    
+*        NM               M-           .M! 
+*/
+
+int get_self_info(QQClient *client)
+{
+    MemoryStruct * data;
+    time_t time_now;
+    char * url;
+
+    data=malloc(sizeof(MemoryStruct));
+    data->ptr=NULL;
+    data->len=0;
+
+    url = malloc(60*sizeof(char));
+
+    time(&time_now);
+
+    sprintf(url,"http://s.web2.qq.com/api/get_self_info2?t=%ld.55",time_now);
+
+    curl_get(url,data);
+
+    print_time();
+    printf("%s.\n",data->ptr);
+
+    return 0;
+
 }
 
 int login_by_qrcode(QQClient * client)
@@ -310,6 +367,35 @@ int login_by_qrcode(QQClient * client)
 
     return 0;
 }
+/*                                                           
+*.                                                           
+*N!.Q; !::-                                                  
+*?-Q?;!-::!                   ->?$QHO>-                      
+*  N$>>-MM;-H-          CMMMMMMMMMMMMMMMMMM7                 
+*    !>!M? -!;-;-?!  HMMMMMMMMMMMMMMMMMMMMMMMMM!             
+*    -7C   -Q.   -.QMMMMMMMMMMMMMMMMMMMMMMMMMMMMMQ           
+*               -CMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.         
+*                MMMMMMMMMQMMMMMMMMMMMMMMMMMMMMMMMMM         
+*               >MMMMMMMMMMMMMMNMMMMMMMMMMMMMMMMMMMMH        
+*               QMMMMMMNMMMMMMMCMMMMMMMMMMMMMMMMMMMMM        
+*                MMM  !:HMMMMMCMMMMMMMMMMMMMMMMMMMMOOOO!.    
+*                MMM - $N;7- - MMMMMMMMMMMMMMMMMMMMOOOOOOOOOO
+*                MMM  MMMM;       M; -MMMMMMMMMMMMMMMM?C-OOOO
+*                MMN   MM!        HMMMO MHMMMMMMMMMMMM       
+*                MM$        :     >MMM7 .MMMMMMMMMMMMM.      
+*                MMM                     MMMMMMMMMMMMM:      
+*                MMM;                   7MMMMMMMMMMMMM?      
+*               .MMMMN     >. .C        MMMMMMMMMMMMMMM      
+*               .MMMMMMM.            >MMMMMMMMMMMMMMMMM      
+*               .MMNHMMMMMMHO?$NMMMMMMMMMMMMMMMMMMMMMMM      
+*               ?MMMMMMMMMM7!!7CHMMMMMMMMMMMMMMMMMMMMMM      
+*               MMMMMMMMMMMQ        MMMMMMMMMMMMMMMMMMM.     
+*               MMMMMMMMM$ !       :; .MMMMMMMMMMMMMMMM>     
+*               M?MMMMMM   .     ?    MMMMMM   .. MMMMMC     
+*             >   MMMMMM7-  C  C  !> -MMMMMN    .?!MMMMH     
+*             !  .MMMMMM   .-  7     MMMMMM;  ;!> MMMMMM     
+*              C .MMMMMM..77O.:-....?MMMMMM   :   >MMMMM
+*/
 
 int login_by_cookie(QQClient * client)
 {
@@ -318,22 +404,25 @@ int login_by_cookie(QQClient * client)
 
     MemoryStruct * login_data;
     MemoryStruct * login_data2;
+    MemoryStruct * cookie;
     cJSON *cjson_login = NULL;
+    cJSON *cjson_login2 = NULL;
     cJSON *cjson_result = NULL;
-
 
     login_data=malloc(sizeof(MemoryStruct));
     login_data->ptr=NULL;
     login_data->len=0;
 
-    MemoryStruct * cookie;
+    login_data2=malloc(sizeof(MemoryStruct));
+    login_data2->ptr=NULL;
+    login_data2->len=0;
 
     cookie=malloc(sizeof(MemoryStruct));
     cookie->ptr=NULL;
     cookie->len=0;
 
     print_time();
-    printf("Trying to login by cookie.\n");
+    printf("Trying to load cookie file.\n");
 
 
     /* Read cookie file to memory */
@@ -351,14 +440,18 @@ int login_by_cookie(QQClient * client)
     cookie->len = ftell(fp);
     fseek(fp, 0, SEEK_SET);
 
-    cookie->ptr = malloc(cookie->len*sizeof(char));
+    cookie->ptr = malloc((cookie->len+1)*sizeof(char));
 
     for (int i = 0; (ch=fgetc(fp))!=EOF; i++){
         cookie->ptr[i]=ch;
     }
+    cookie->ptr[cookie->len]='\0';
 
     fclose(fp);
-    
+
+    print_time();
+    printf("Cookie file loaded.\n");
+
     {
         char * cp;
         int i,j;
@@ -366,12 +459,25 @@ int login_by_cookie(QQClient * client)
         for(i=0;cp[i+8]!='\n';i++){
             ;
         }
-        client->ptwebqq = malloc((i+1)*sizeof(char));
+        client->ptwebqq = malloc((i+2)*sizeof(char));
+        if (client->ptwebqq==NULL){
+            printf("\033[31m");
+            print_time();
+            fprintf(stderr, "Cannot set space for ptwebqq, malloc() return NULL.");
+            printf("\033[0m\n");
+            return -1;
+        }
         for(j=0;j<i;j++){
             client->ptwebqq[j]=cp[j+8];
         }
         client->ptwebqq[j]='\0';
     }
+
+    mem_free(cookie);
+    free(cookie);
+
+    print_time();
+    printf("Trying to login by cookie.\n");
 
     {
         char * login_message;
@@ -380,6 +486,8 @@ int login_by_cookie(QQClient * client)
             client->ptwebqq, DEFAULT_CLIENT_ID, PSESSIONID);
 
         curl_post(LOGIN_URL,login_data,login_message,SMART_QQ_REFER);
+
+        free(login_message);
     }
 
     cjson_login = cJSON_Parse(login_data->ptr);
@@ -396,6 +504,9 @@ int login_by_cookie(QQClient * client)
         return -1;
     }
 
+    print_time();
+    printf("Login by cookie step 1 succeed.\n");
+
     cjson_result = cJSON_GetObjectItem(cjson_login, "result");
 
     client->uin = (long)cJSON_GetObjectItem(cjson_result, "uin")->valuedouble;
@@ -403,9 +514,8 @@ int login_by_cookie(QQClient * client)
     client->psessionid = mem_dup(cJSON_GetObjectItem(cjson_result, "psessionid")->valuestring);
     client->vfwebqq = mem_dup(cJSON_GetObjectItem(cjson_result, "vfwebqq")->valuestring);
 
-    login_data2=malloc(sizeof(MemoryStruct));
-    login_data2->ptr=NULL;
-    login_data2->len=0;
+    print_time();
+    printf("Login by cookie step 2.\n");
 
     {
         time_t time_now;
@@ -416,15 +526,17 @@ int login_by_cookie(QQClient * client)
         time(&time_now);
         sprintf(url,LOGIN_URL2,client->ptwebqq,DEFAULT_CLIENT_ID,client->psessionid,time_now*1000);
 
-        curl_get_with_referer(url,login_data2,SMART_QQ_REFER);
+        curl_get_with_referer(url,login_data2,SMART_QQ_REFER);    
+
+        free(url);
     }
 
-    cjson_login = cJSON_Parse(login_data2->ptr);
+    cjson_login2 = cJSON_Parse(login_data2->ptr);
 
     mem_free(login_data2);
     free(login_data2);
 
-    if (cJSON_GetObjectItem(cjson_login, "retcode")->valueint != 0)
+    if (cJSON_GetObjectItem(cjson_login2, "retcode")->valueint != 0)
     {
         printf("\033[31m");
         print_time();
@@ -435,6 +547,68 @@ int login_by_cookie(QQClient * client)
 
     print_time();
     printf("Login by cookie succeed. User ID: [\033[32m%ld\033[0m]\n",client->uin);
+
+    sleep(4);
+
+    get_self_info(client);
+
+    return 0;
+}
+/*
+*                                        777>777             
+*                            >777777777777777777777777777::  
+*                  -     >>7777777777777777777777777777777777
+*                 ;77-- ;777777777777777777777777777777777777
+*                 >> !!7>77>>777777777777777777777777777!  -7
+*                 7!   >7>.     ;--:>>77777777777>;;;;-!7777!
+*                 7: !!>;           -> ..;-:::::!!!!!>>>7??! 
+*                 !>-          :>77!:7       ..7>       !>>  
+*              --7>       .!!>>;   ;7-     :7!! >>       !!7.
+*             ;>>>       !7>>:     :>     :7!   ;7-        7>
+*            >>      >>7!.       ..7:  ..>>       >>>       >
+*          :7;   !7!.            ::7  !77;      .  ;;>>.     
+*        ..7! .>>7;      ->..    >>> -7::      ?C7:;;;>7:    
+*       >77!7>C??    --CC?;      77->>           ;:77COC?>>7!
+*      !777>-C7   ;?OCC-        ;77>>                   .::?:
+*      >7>> 7O-   CC>..         -777-                        
+*     >7:  7C-      .??CCC;      --;             -COOC7      
+*    .!. ::O!       !CCCOCC                      CCOOOC;     
+*        ??C.       -CCCCC>                      :CCCC>      
+*       !CC:                                                 
+*      .C??                                                  
+*      :C!!                   .-          .C>                
+*      CC                     C?    !C7    7C..             7
+*     -C!                     >CC??OOCC77!CC:            ..77
+*     !C-                      >CCC?;;?OOCC:             777>
+*     ?C                                                .--  
+*    .C7                                                     
+*    ;C!                                                     
+*    :O:                                                     
+*    :O- 
+*/
+
+int check_message(QQClient * client)
+{
+    char * post_msg;
+    MemoryStruct * msg_data;
+
+    msg_data=malloc(sizeof(MemoryStruct));
+    msg_data->ptr=NULL;
+    msg_data->len=0;
+
+    post_msg = malloc((70+strlen(client->ptwebqq)+strlen(client->psessionid))*sizeof(char));
+    
+    sprintf(post_msg,"r={\"psessionid\": \"%s\", \"key\": \"\", \"clientid\": %d, \"ptwebqq\": \"%s\"}",\
+        client->psessionid, DEFAULT_CLIENT_ID,client->ptwebqq );
+    
+    curl_post(POLL_URL,msg_data,post_msg,SMART_QQ_REFER);
+    
+    print_time();
+    printf("%s",msg_data->ptr);
+
+    free(post_msg);
+    mem_free(msg_data);
+    free(msg_data);
 
     return 0;
 }

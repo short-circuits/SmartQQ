@@ -34,6 +34,7 @@ SOFTWARE.
 /* Declear using Safari 10.0 on macOS */
 #define _USERAGENT_ "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0.1 Safari/602.2.14"
 #define COOKIE_FILE "./cookie.txt"
+#define PEM_FILE "./pem.txt"
 
 
 int curl_getfile(char* url, FILE * fp);
