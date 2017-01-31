@@ -40,7 +40,7 @@ SOFTWARE.
 #define INIT_URL "https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1&s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert&strong_login=1&login_state=10&t=20131024001"
 #define QR_URL "https://ssl.ptlogin2.qq.com/ptqrshow?appid=%s&e=0&l=L&s=8&d=72&v=4"
 #define QR_VALIDATION_URL  "https://ssl.ptlogin2.qq.com/ptqrlogin?webqq_type=10&remember_uin=1&login2qq=1&aid=%s&u1=http%%3A%%2F%%2Fw.qq.com%%2Fproxy.html%%3Flogin2qq%%3D1%%26webqq_type%%3D10&ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert&action=0-0-%ld&mibao_css=%s&t=undefined&g=1&js_type=0&js_ver=%s&login_sig=%s"
-#define SMART_QQ_REFER "http://d1.web2.qq.com/proxy.html?v=20030916001&callback=1&id=2"
+#define SMART_QQ_REFER "http://d.web2.qq.com/proxy.html?v=20110331002&callback=1&id=2"
 #define LOGIN_URL "http://d1.web2.qq.com/channel/login2"
 #define LOGIN_URL2 "http://s.web2.qq.com/api/getvfwebqq?ptwebqq=%s&clientid=%d&psessionid=%s&t=%ld"
 #define POLL_URL "http://d1.web2.qq.com/channel/poll2"

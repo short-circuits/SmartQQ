@@ -215,8 +215,41 @@ int get_self_info(QQClient *client)
 
     curl_get_with_referer(url,data,SMART_QQ_REFER);
 
+    free(url);
+
     print_time();
     printf("%s.\n",data->ptr);
+
+    mem_free(data);
+    free(data);
+
+    return 0;
+
+}
+
+int get_online_buddies(QQClient * client)
+{
+    MemoryStruct * data;
+    time_t time_now;
+    char * url;
+
+    data=malloc(sizeof(MemoryStruct));
+    data->ptr=NULL;
+    data->len=0;
+
+    url = malloc(450*sizeof(char));
+
+    time(&time_now);
+
+    sprintf(url,"http://d1.web2.qq.com/channel/get_online_buddies2?vfwebqq=%s&clientid=%d&psessionid=%s&t=%ld.55",\
+        client->vfwebqq,DEFAULT_CLIENT_ID,client->psessionid,time_now);
+
+    curl_get_with_referer(url,data,SMART_QQ_REFER);
+
+    free(url);
+
+    mem_free(data);
+    free(data);
 
     return 0;
 
@@ -560,6 +593,7 @@ int login_by_cookie(QQClient * client)
     sleep(4);
 
     get_self_info(client);
+    get_online_buddies(client);
 
     return 0;
 }
