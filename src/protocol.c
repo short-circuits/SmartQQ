@@ -495,6 +495,7 @@ int login_by_cookie(QQClient * client)
             print_time();
             fprintf(stderr, "Invalid cookie.txt.");
             printf("\033[0m\n");
+            remove(COOKIE_FILE);
             return -1;
         }
 
@@ -563,7 +564,7 @@ int login_by_cookie(QQClient * client)
         time_t time_now;
         char * url;
         url = malloc((strlen(client->ptwebqq)+\
-            20+strlen(client->psessionid)\
+            100+strlen(client->psessionid)\
             )*sizeof(char));
         time(&time_now);
         sprintf(url,LOGIN_URL2,client->ptwebqq,DEFAULT_CLIENT_ID,client->psessionid,time_now*1000);
