@@ -31,3 +31,10 @@
 # Debug files
 *.dSYM/
 *.su
+
+# Target files
+qq
+
+# Runtime files
+qrcode.bmp
+cookie.txt
